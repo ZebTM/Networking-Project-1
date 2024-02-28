@@ -1,8 +1,8 @@
 package webserver;
-/**
-* Assignment 1
-* Zachary Brown
-**/
+// /**
+// * Assignment 1
+// * Zachary Brown
+// **/
 
 import java.io.* ;
 import java.net.* ;
@@ -81,13 +81,8 @@ final class HttpRequest implements Runnable
 
         String fileName = tokens.nextToken();
         
-
-        // if ( fileName.startsWith("/")) {
-        //     fileName = fileName.substring(1,fileName.length());
-        // }
         fileName = "." + fileName;  
 
-        System.out.println(fileName);
         FileInputStream fis = null;
         boolean fileExists = true;
         try {
@@ -100,32 +95,33 @@ final class HttpRequest implements Runnable
         String contentTypeLine = null;
         String entityBody = null;
 
-        if (fileExists) {
-            statusLine = "HTTP/1.1 200 OK " + CRLF;
-            contentTypeLine = "Content-type: " + contentType( fileName );
-        } else {
+        
+		if (fileExists) {
+			statusLine = "HTTP/1.1 200 OK" + CRLF;
+			contentTypeLine = "Content-type: " + 
+				contentType( fileName ) + CRLF;
+		} else {
             statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-            contentTypeLine = "NONE";
+            contentTypeLine = "Content-type: text/html";
             entityBody = "\n\n Not Found";
         }
 
-        os.writeBytes( statusLine );
+		os.writeBytes(statusLine);
 
-        os.writeBytes( contentTypeLine );
+		// Send the content type line.
+		os.writeBytes(contentTypeLine);
 
-        // os.writeBytes( entityBody );
-
-        os.writeBytes( CRLF );
+		// Send a blank line to indicate the end of the header lines.
+		os.writeBytes(CRLF);
 
         if ( fileExists ) {
-            writeBytes( fis, os );
+            writeBytes(fis, os);
             fis.close();
         } else {
-            os.writeBytes( entityBody );
+			fis = new FileInputStream( "./notFound.html");
+            writeBytes(fis, os);
         }
 
-
-        
         // Close streams and socket.
         os.close();
         br.close();
@@ -157,6 +153,3 @@ final class HttpRequest implements Runnable
         }
     }
 }
-
-
-
